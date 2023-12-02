@@ -3,30 +3,40 @@ package day02
 import readInput
 
 fun main() {
-    fun List<String>.parseInput(): List<Map<String, Int>> = map { line ->
+    data class Game(
+        val red: Int,
+        val green: Int,
+        val blue: Int
+    )
+
+    fun List<String>.parseInput(): List<Game> = map { line ->
         line.substringAfter(':')
             .split(',', ';')
             .map {
                 val (n, color) = it.trim().split(' ')
 
                 color to n.toInt()
-            }.groupBy { it.first }
-            .mapValues { (_, values) -> values.maxOf { it.second } }
+            }.groupBy({ it.first }, { it.second })
+            .mapValues { (_, values) -> values.max() }
+    }.map {
+        Game(
+            red = it["red"] ?: 0,
+            green = it["green"] ?: 0,
+            blue = it["blue"] ?: 0
+        )
     }
 
     fun part1(input: List<String>): Int = input
         .parseInput()
         .withIndex()
-        .filter { (_, value) ->
-            value.getValue("red") <= 12 &&
-                    value.getValue("green") <= 13 &&
-                    value.getValue("blue") <= 14
+        .filter { (_, game) ->
+            game.red <= 12 && game.green <= 13 && game.blue <= 14
         }.sumOf { it.index + 1 }
 
     fun part2(input: List<String>): Int = input
         .parseInput()
-        .sumOf {
-            it.values.reduce { acc, i -> acc * i }
+        .sumOf { game ->
+            game.red * game.green * game.blue
         }
 
     // test if implementation meets criteria from the description, like:
