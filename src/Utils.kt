@@ -42,3 +42,18 @@ fun <T> List<T>.splitBy(separator: T): List<List<T>> {
 
     return result
 }
+
+fun <T> timed(work: (Unit) -> T): Pair<T, Long> {
+    val start = System.currentTimeMillis()
+
+    val result = work.invoke(Unit)
+
+    val timeTaken = System.currentTimeMillis() - start
+
+    return result to timeTaken
+}
+
+fun benchmark(times: Int, work: (Unit) -> Any): List<Long> =
+    List(times) {
+        timed(work).second
+    }
